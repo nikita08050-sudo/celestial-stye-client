@@ -1,24 +1,32 @@
 name: Build Minecraft Client
 
 on:
-workflow_dispatch:
+  workflow_dispatch:
 
 jobs:
-build:
-runs-on: ubuntu-latest
-steps:
-- uses: actions/checkout@v4
-- uses: actions/setup-java@v4
-with:
-distribution: temurin
-java-version: '21'
-- name: Build project
-run: |
-unzip -q celestial-style-fabric-1.21.4-project.zip -d project
-cd project
-chmod +x gradlew
-./gradlew build --no-daemon
-- uses: actions/upload-artifact@v4
-with:
-name: minecraft-client
-path: project/**/build/libs/*.jar
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Unzip project
+        run: unzip -q celestial-style-fabric-1.21.4-project.zip
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew build --no-daemon
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: minecraft-client
+          path: build/libs/*.jar
